@@ -17,4 +17,4 @@ urlpatterns = [
 ]
 
 
-from djoser.urls import jwt
+# from djoser.urls import jwt
