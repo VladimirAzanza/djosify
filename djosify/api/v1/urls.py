@@ -1,9 +1,8 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
 
-
-from .views import (
+from api.v1.users.views import (
     CustomCreateUserViewSet,
+    CustomLogoutView,
     CustomProfileUserViewSet,
     CustomTokenRefreshView,
     CustomTokenObtainPairView,
@@ -21,5 +20,7 @@ urlpatterns = [
     }), name='me'),
     path('login/', CustomTokenObtainPairView.as_view(), name='login'),
     path('refresh/', CustomTokenRefreshView.as_view(), name='refresh'),
-    path('', include('djoser.urls.jwt')),
+    path('logout/', CustomLogoutView.as_view({
+        'delete': 'destroy'
+    }), name='logout'),
 ]

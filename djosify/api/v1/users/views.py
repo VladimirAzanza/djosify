@@ -2,8 +2,9 @@ from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.mixins import DestroyModelMixin
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt import views as JWTViews
 from rest_framework_simplejwt.exceptions import TokenError as JWTTokenError
 
@@ -71,3 +72,7 @@ class CustomTokenRefreshView(JWTViews.TokenRefreshView):
             'refresh_token': new_refresh_token,
         }
         return Response(custom_response, status=status.HTTP_200_OK)
+
+
+class CustomLogoutView(DestroyModelMixin, GenericViewSet):
+    pass
