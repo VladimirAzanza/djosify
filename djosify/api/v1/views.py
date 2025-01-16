@@ -21,7 +21,6 @@ class CustomProfileUserViewSet(DjoserUserViewSet):
     @action(
         methods=['get', 'put'],
         detail=False,
-        permission_classes=(IsAuthenticated,)
     )
     def me(self, request, *args, **kwargs):
         return super().me(request, *args, **kwargs)

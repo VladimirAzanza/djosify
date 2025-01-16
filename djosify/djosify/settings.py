@@ -116,4 +116,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
+    'SERIALIZERS': {
+        'current_user': 'api.v1.users.serializers.CustomUserSerializer'
+    },
 }

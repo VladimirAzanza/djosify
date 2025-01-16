@@ -15,10 +15,11 @@ urlpatterns = [
     path('register/', CustomCreateUserViewSet.as_view({
         'post': 'create'
     }), name='register'),
+    path('me/', CustomProfileUserViewSet.as_view({
+        'get': 'me',
+        'put': 'me'
+    }), name='me'),
     path('login/', CustomTokenObtainPairView.as_view(), name='login'),
     path('refresh/', CustomTokenRefreshView.as_view(), name='refresh'),
-    path('me/', CustomProfileUserViewSet.as_view({
-        'get': 'me'
-    }), name='me'),
     path('', include('djoser.urls.jwt')),
 ]
