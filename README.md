@@ -10,18 +10,18 @@ Djosify provides an authentication solution for Django applications with capabil
 
 ## Features
 
-- **JWT Authentication**: Obtain access and refresh tokens, with the ability to refresh them. The refresh token is stored server-side to manage session state.
-- **User Management**: Registration, login, profile update, and logout functionality.
-- **API Documentation**: Interactive API documentation available via Swagger and ReDoc.
+- 🔑 **JWT Authentication**: Obtain access and refresh tokens, with the ability to refresh them. The refresh token is stored server-side to manage session state.
+- 👤 **User Management**: Registration, login, profile update, and logout functionality.
+- 📄 **API Documentation**: Interactive API documentation available via Swagger and ReDoc.
 
 ## Requirements
 
-- Python 3.10.12
-- Django 5.1.5
-- Django REST Framework
-- Djoser for user authentication 
-- djangorestframework-simplejwt for JWT token management
-- drf-yasg for dynamic API documentation
+- 🐍 Python 3.10.12
+- 🖥️ Django 5.1.5
+- 🔗 Django REST Framework
+- 🔑 Djoser for user authentication 
+- 🔄 djangorestframework-simplejwt for JWT token management
+- 📑 drf-yasg for dynamic API documentation
 
 ## Installation
 
@@ -53,8 +53,8 @@ Djosify provides an authentication solution for Django applications with capabil
 
 The API is available at http://localhost:8000/api/. For interactive documentation, you can access the following links:
 
-    Swagger UI: http://localhost:8000/swagger/
-    ReDoc UI: http://localhost:8000/redoc/
+    📜 Swagger UI: http://localhost:8000/swagger/
+    📚 ReDoc UI: http://localhost:8000/redoc/
 
 ## API Usage
 User Registration
