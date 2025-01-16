@@ -5,9 +5,17 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt import views as JWTViews
 from rest_framework_simplejwt.exceptions import TokenError as JWTTokenError
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from .exceptions import CustomInvalidTokenException
+from .utils import (
+    get_user_refresh_token,
+    validate_jwt_token,
+    validate_refresh_token_in_db
+)
+from djosify.constants import (
+    NO_REFRESH_TOKEN_RESPONSE,
+    SUCCESS_LOGOUT_RESPONSE
+)
 from users.models import UserRefreshToken
 
 User = get_user_model()
@@ -27,17 +35,13 @@ class CustomProfileUserViewSet(DjoserUserViewSet):
         refresh_token = request.data.get('refresh_token')
         if not refresh_token:
             return Response(
-                {"refresh_token": "This field is required"},
-                status=status.HTTP_400_BAD_REQUEST
+                NO_REFRESH_TOKEN_RESPONSE, status=status.HTTP_400_BAD_REQUEST
             )
         try:
-            user_refresh_token = UserRefreshToken.objects.get(
-                refresh_token=refresh_token
-            )
+            user_refresh_token = get_user_refresh_token(refresh_token)
             user_refresh_token.delete()
             return Response(
-                {"success": "User logged out."},
-                status=status.HTTP_200_OK
+                SUCCESS_LOGOUT_RESPONSE, status=status.HTTP_200_OK
             )
         except (UserRefreshToken.DoesNotExist, JWTTokenError, Exception):
             raise CustomInvalidTokenException()
@@ -63,28 +67,17 @@ class CustomTokenRefreshView(JWTViews.TokenRefreshView):
         if 'refresh_token' in request.data:
             request.data['refresh'] = request.data.pop('refresh_token')
         serializer = self.get_serializer(data=request.data)
-
-        try:
-            serializer.is_valid(raise_exception=True)
-        except JWTTokenError:
-            raise CustomInvalidTokenException()
-        validated_data = serializer.validated_data
-        new_refresh_token = validated_data.get('refresh')
-
-        try:
-            user_refresh_token = UserRefreshToken.objects.get(
-                refresh_token=request.data['refresh']
+        new_refresh_token = validate_jwt_token(serializer)
+        refresh_token_in_db = validate_refresh_token_in_db(
+                request.data['refresh']
             )
-            user = user_refresh_token.user
-        except UserRefreshToken.DoesNotExist:
-            raise CustomInvalidTokenException()
-
+        user = refresh_token_in_db.user
         UserRefreshToken.objects.update_or_create(
             user=user,
             defaults={'refresh_token': new_refresh_token}
         )
         custom_response = {
-            'access_token': validated_data.get('access'),
+            'access_token': serializer.validated_data.get('access'),
             'refresh_token': new_refresh_token,
         }
         return Response(custom_response, status=status.HTTP_200_OK)
