@@ -22,16 +22,21 @@ User = get_user_model()
 
 
 class CustomCreateUserViewSet(DjoserUserViewSet):
+    """Viewset for users creation, extending from Djoser's UserViewSet."""
     pass
 
 
 class CustomProfileUserViewSet(DjoserUserViewSet):
+    """Custom viewset for managing the me/ and logout/ endpoint."""
+
     @action(methods=['get', 'put'], detail=False)
     def me(self, request, *args, **kwargs):
+        """Retrieve or update the logged-in user's profile."""
         return super().me(request, *args, **kwargs)
 
     @action(methods=['post'], detail=False)
     def logout(self, request, *args, **kwargs):
+        """Log out the user by deleting their refresh token."""
         refresh_token = request.data.get('refresh_token')
         if not refresh_token:
             return Response(
@@ -48,7 +53,15 @@ class CustomProfileUserViewSet(DjoserUserViewSet):
 
 
 class CustomTokenObtainPairView(JWTViews.TokenObtainPairView):
+    """Custom view for obtaining access and refresh JSon Web Tokens."""
+
     def post(self, request, *args, **kwargs):
+        """Override the default 'post' method to add refresh token storage.
+
+        - Stores the refresh token in the 'UserRefreshToken' model upon
+        successful login.
+        - Returns the 'access_token' and 'refresh_token' to the client.
+        """
         response = super().post(request, *args, **kwargs)
         if response.status_code == status.HTTP_200_OK:
             refresh_token = response.data.get('refresh')
@@ -63,7 +76,16 @@ class CustomTokenObtainPairView(JWTViews.TokenObtainPairView):
 
 
 class CustomTokenRefreshView(JWTViews.TokenRefreshView):
+    """Custom view for refreshing JWT tokens."""
+
     def post(self, request, *args, **kwargs):
+        """Override the default 'post' method to add token validation and
+        handling.
+
+        - Accepts a 'refresh_token' in the request body.
+        - Validates the refresh token with the JWT serializer and the database.
+        - Returns a new 'access_token' and 'refresh_token'.
+        """
         if 'refresh_token' in request.data:
             request.data['refresh'] = request.data.pop('refresh_token')
         serializer = self.get_serializer(data=request.data)
