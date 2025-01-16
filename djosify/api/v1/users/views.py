@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt import views as JWTViews
 from rest_framework_simplejwt.exceptions import TokenError as JWTTokenError
@@ -26,17 +25,11 @@ class CustomProfileUserViewSet(DjoserUserViewSet):
     @action(methods=['post'], detail=False)
     def logout(self, request, *args, **kwargs):
         refresh_token = request.data.get('refresh_token')
-
         if not refresh_token:
             return Response(
                 {"refresh_token": "This field is required"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        serializer = TokenRefreshSerializer(data={'refresh': refresh_token})
-
-        if not serializer.is_valid():
-            return Response({"detail": "Invalid refresh token."}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             user_refresh_token = UserRefreshToken.objects.get(
                 refresh_token=refresh_token
@@ -46,8 +39,7 @@ class CustomProfileUserViewSet(DjoserUserViewSet):
                 {"success": "User logged out."},
                 status=status.HTTP_200_OK
             )
-
-        except (UserRefreshToken.DoesNotExist, Exception) as e:
+        except (UserRefreshToken.DoesNotExist, JWTTokenError, Exception):
             raise CustomInvalidTokenException()
 
 
