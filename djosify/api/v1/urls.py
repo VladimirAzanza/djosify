@@ -1,8 +1,10 @@
 from django.urls import include, path
-from rest_framework_simplejwt import views as JWTViews
+from rest_framework.routers import DefaultRouter
+
 
 from .views import (
     CustomCreateUserViewSet,
+    CustomProfileUserViewSet,
     CustomTokenRefreshView,
     CustomTokenObtainPairView,
 )
@@ -15,8 +17,8 @@ urlpatterns = [
     }), name='register'),
     path('login/', CustomTokenObtainPairView.as_view(), name='login'),
     path('refresh/', CustomTokenRefreshView.as_view(), name='refresh'),
+    path('me/', CustomProfileUserViewSet.as_view({
+        'get': 'me'
+    }), name='me'),
     path('', include('djoser.urls.jwt')),
 ]
-
-
-# from djoser.urls import jwt

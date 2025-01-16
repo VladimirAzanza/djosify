@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt import views as JWTViews
 from rest_framework_simplejwt.exceptions import TokenError as JWTTokenError
@@ -13,6 +15,16 @@ User = get_user_model()
 
 class CustomCreateUserViewSet(DjoserUserViewSet):
     pass
+
+
+class CustomProfileUserViewSet(DjoserUserViewSet):
+    @action(
+        methods=['get', 'put'],
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
+    def me(self, request, *args, **kwargs):
+        return super().me(request, *args, **kwargs)
 
 
 class CustomTokenObtainPairView(JWTViews.TokenObtainPairView):

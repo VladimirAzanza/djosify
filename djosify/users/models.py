@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField('Email address', unique=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['password']
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
