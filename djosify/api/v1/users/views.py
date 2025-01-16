@@ -2,11 +2,11 @@ from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.mixins import DestroyModelMixin
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt import views as JWTViews
 from rest_framework_simplejwt.exceptions import TokenError as JWTTokenError
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from .exceptions import CustomInvalidTokenException
 from users.models import UserRefreshToken
@@ -19,12 +19,36 @@ class CustomCreateUserViewSet(DjoserUserViewSet):
 
 
 class CustomProfileUserViewSet(DjoserUserViewSet):
-    @action(
-        methods=['get', 'put'],
-        detail=False,
-    )
+    @action(methods=['get', 'put'], detail=False)
     def me(self, request, *args, **kwargs):
         return super().me(request, *args, **kwargs)
+
+    @action(methods=['post'], detail=False)
+    def logout(self, request, *args, **kwargs):
+        refresh_token = request.data.get('refresh_token')
+
+        if not refresh_token:
+            return Response(
+                {"refresh_token": "This field is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = TokenRefreshSerializer(data={'refresh': refresh_token})
+
+        if not serializer.is_valid():
+            return Response({"detail": "Invalid refresh token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user_refresh_token = UserRefreshToken.objects.get(
+                refresh_token=refresh_token
+            )
+            user_refresh_token.delete()
+            return Response(
+                {"success": "User logged out."},
+                status=status.HTTP_200_OK
+            )
+
+        except (UserRefreshToken.DoesNotExist, Exception) as e:
+            raise CustomInvalidTokenException()
 
 
 class CustomTokenObtainPairView(JWTViews.TokenObtainPairView):
@@ -72,7 +96,3 @@ class CustomTokenRefreshView(JWTViews.TokenRefreshView):
             'refresh_token': new_refresh_token,
         }
         return Response(custom_response, status=status.HTTP_200_OK)
-
-
-class CustomLogoutView(DestroyModelMixin, GenericViewSet):
-    pass
