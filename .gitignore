@@ -13,7 +13,7 @@ env/
 db.sqlite3
 media/
 static/
-collectstatic/
+collected_static/
 
 # Byte-compiled
 *.swp
