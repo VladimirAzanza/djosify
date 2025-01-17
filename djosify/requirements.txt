@@ -5,4 +5,3 @@ djangorestframework_simplejwt==5.4.0
 python-dotenv==1.0.1
 drf-yasg==1.21.8
 psycopg2-binary==2.9.10
-gunicorn
