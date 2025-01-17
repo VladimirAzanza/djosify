@@ -24,3 +24,9 @@ media/
 # OS-specific
 .DS_Store
 Thumbs.db
+aws-elastic-beanstalk-cli-setup/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
