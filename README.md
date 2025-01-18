@@ -59,23 +59,23 @@ The API is available at http://localhost:8000/api/. For interactive documentatio
 ## API Usage
 User Registration
 
-    POST /api/v1/register/
+    POST /api/register/
     Register a new user by providing email and password.
 
 Authentication
 
-    POST /api/v1/login/
+    POST /api/login/
     Obtain an access_token and refresh_token using the email and password.
 
-    POST /api/v1/refresh/
+    POST /api/refresh/
     Refresh the access token using the refresh_token.
 
 Profile Management
 
-    GET/PUT /api/v1/me/
+    GET/PUT /api/me/
     Retrieve or update the profile of the logged-in user.
 
 Logout
 
-    POST /api/v1/logout/
+    POST /api/logout/
     Log out the user by deleting their refresh token.
